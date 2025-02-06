@@ -1,12 +1,25 @@
 <template>
-  <div>
-    <NuxtRouteAnnouncer />
-    <NuxtWelcome />
-    {{ data.value }}
+  <div class="background">
+    <NuxtPage />
   </div>
 </template>
 
-<script setup>
-const { data } = await useFetch('/api/read')
-console.log(data.value.value)
-</script>
+<!-- <script setup>
+</script> -->
+
+<style>
+.background {
+  background-image: url('./style/minecraft-background.jpg');
+  background-size: cover;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+body {
+  margin: 0;
+}
+</style>
