@@ -1,12 +1,20 @@
 <template>
   <div>
-    <LoaderItem />
-    {{ data }}
-    <div 
+    <UInput type="file" size="sm" icon="i-heroicons-folder" />
+
+    <span> {{ schematicName }} </span>
+    <LoaderItem
+      :list="arrayCount"
+    />
+    <div
+      v-if="listImage"
       v-for="(name, i) in arrayPallete"
     >
       <MineItem
         :name="name"
+        :image="listImage[i]"
+        :current="arrayCount[i]"
+        :total="arrayCount[i]"
       />
     </div>
   </div>
@@ -38,10 +46,10 @@ function getMaterialListForRegion(schematic, regionName, materialList = {}) {
     for (let z = 0; z < zsizeAbs; z++) {
       for (let x = 0; x < xsizeAbs; x++) {
         const idx = getLitematicaPaletteIdx(x, y, z, xsizeAbs, zsizeAbs, bits, blockStates);
-        const ref = palette[idx];
-        const material = ref.Name.value;
-        if (!materialList[material]) {materialList[material] = 0;}
-          materialList[material] ++;
+        const material = palette[idx];
+        const materialName = material.Name.value;
+        if (!materialList[materialName]) {materialList[materialName] = 0;}
+          materialList[materialName] ++;
       }
     }
   }
@@ -85,20 +93,28 @@ let materialList = regionNames.reduce((result, regionName) => {
 
 console.log("materialList: ", materialList)
 
-/////////////////////////////////////
+const schematicName = data.value.value.Metadata.value.Name.value;
 
 const arrayPallete = [
   ...new Set(
     regionNames
       .flatMap(regionName => schematic.Regions.value[regionName]?.value.BlockStatePalette?.value.value)
-      .map(item => item.Name.value)
-      .filter(name => name !== 'minecraft:air')
-  )
-,
-'minecraft:blue_orchid',
-'minecraft:brown_mushroom'
+      .map(item => item.Name.value.slice(10))
+      .filter(name => name !== 'air')
+  ),
+  'blue_orchid',
+  'brown_mushroom',
 ];
+const arrayCount = ref(new Array(arrayPallete.length).map((item) => item = { current: 0, total: 0 }));
 
+let listImage = reactive({});
+useFetch('/api/mc', {
+    method: 'PUT',
+    body: { listName: arrayPallete },
+  })
+  .then((res) => {
+    listImage = res.data;
+  });
 </script>
 
 <style scoped>

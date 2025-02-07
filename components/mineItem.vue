@@ -1,30 +1,63 @@
 <template>
-  <div>
-    <!-- Изображение ресурса -->
+  <UCard>
+    <UContainer>
+      <img
+        style="height: 64px; image-rendering: pixelated;"
+        :src="'data:image/png;base64,' + props.image"
+      >
 
-     <!-- ПОЧЕМУ ОДИН И ТОТ ЖЕ КОМПОНЕНТ? -->
-    <div><img :src="'data:image/png;base64,' + data2"></div>
+      <span style="color: black"> {{ props.name + ': ' }} </span>
 
-    <span> {{ props.name }} </span>
+      <input
+        v-model="current"
+        class="number-input"
+        type="number"
+        min="0"
+        pattern="[0-9]*"
+        style="color: black"
+      />
 
-    <!-- Поле с число собрано/надо -->
-    <div></div>
+      <span style="color: black"> {{ '/' + props.total }} </span>
 
-    <!-- чекбокс -->
-    <div></div>
-  </div>
+      <input type="checkbox" id="checkbox" />
+    </UContainer>
+  </UCard>
 </template>
 
 <script setup>
-const props = defineProps(['name',]);
-
-// ЧТО ТО НЕ ТО С ЗАПРОСАМИ
-const { data: data2 } = await useFetch('/api/mc', {
-  method: 'PUT',
-  body: { name: props.name },
+const props = defineProps({
+  name: {
+    type: String,
+    default: '',
+  }, 
+  image: {
+    type: String,
+    default: '',
+  },
+  // current: {
+  //   type: Number,
+  //   default: 0,
+  // },
+  total: {
+    type: Number,
+    default: 0,
+  },
 });
-console.log(data2?.value)
+
+const current = ref(0);
+// const nameWithCount = computed(() => props.name + ': ' + current.value + '/' + props.total);
 </script>
 
 <style scoped>
+/* Chrome, Safari, Edge, Opera */
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.number-input[type=number] {
+  -moz-appearance: textfield;
+}
 </style>
