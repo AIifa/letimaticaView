@@ -11,9 +11,14 @@
   },
   "dependencies": {
     "@types/node": "^22.13.1",
+    "minecraft-assets": "^1.13.0",
     "nuxt": "^3.15.4",
+    "prismarine-item": "^1.16.0",
     "prismarine-nbt": "^2.7.0",
     "vue": "latest",
     "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@nuxt/ui": "^2.21.0"
   }
 }
