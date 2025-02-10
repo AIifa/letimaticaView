@@ -5,7 +5,7 @@
       :src="'data:image/png;base64,' + props.image"
     >
 
-    <span style="color: black"> {{ props.name + ': ' }} </span>
+    <span style="margin-left: 5px; color: black"> {{ props.name + ': ' }} </span>
 
     <input
       v-model="current"
@@ -13,12 +13,13 @@
       type="number"
       min="0"
       pattern="[0-9]*"
-      style="color: black"
+      style="margin-left: 5px; color: black"
+      :max="props.total"
     />
 
     <span style="color: black"> {{ '/' + props.total }} </span>
 
-    <input type="checkbox" id="checkbox" />
+    <input style="margin-left: 5px;" type="checkbox" id="checkbox" />
   </div>
 </template>
 
@@ -61,11 +62,12 @@ const current = ref(0);
 
 .number-input {
   background: transparent;
+  field-sizing: content;
+  min-width: 8px;
 }
 
 .item-container {
   display: flex;
   align-items: center;
-  gap: 0px 5px;
 }
 </style>
