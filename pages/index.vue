@@ -1,16 +1,20 @@
 <template>
-  <div>
-    <UInput type="file" size="sm" icon="i-heroicons-folder" />
+  <div class="page">
+    <UInput
+      v-if="true"
+      type="file"
+      size="sm"
+      icon="i-heroicons-folder" 
+    />
 
     <span> {{ schematicName }} </span>
     <LoaderItem
       :list="arrayCount"
     />
-    <div
-      v-if="listImage"
-      v-for="(name, i) in arrayPallete"
-    >
+    <div class="mine-item-container">
       <MineItem
+        v-if="listImage"
+        v-for="(name, i) in arrayPallete"
         :name="name"
         :image="listImage[i]"
         :current="arrayCount[i]"
@@ -37,6 +41,16 @@ const arrayPallete = [
   ),
   'blue_orchid',
   'brown_mushroom',
+  'blue_orchid',
+  'brown_mushroom',
+  'blue_orchid',
+  'brown_mushroom',
+  'blue_orchid',
+  'brown_mushroom',
+  'blue_orchid',
+  'brown_mushroom',
+  'blue_orchid',
+  'brown_mushroom',
 ];
 const arrayCount = ref(new Array(arrayPallete.length).map((item) => item = { current: 0, total: 0 }));
 
@@ -50,6 +64,14 @@ useFetch('/api/mc', {
   });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.page {
+  width: 100%;
+}
 
+.mine-item-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
 </style>

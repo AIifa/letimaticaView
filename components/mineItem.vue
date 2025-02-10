@@ -1,27 +1,25 @@
 <template>
-  <UCard>
-    <UContainer>
-      <img
-        style="height: 64px; image-rendering: pixelated;"
-        :src="'data:image/png;base64,' + props.image"
-      >
+  <div class="item-container">
+    <img
+      style="height: 64px; image-rendering: pixelated;"
+      :src="'data:image/png;base64,' + props.image"
+    >
 
-      <span style="color: black"> {{ props.name + ': ' }} </span>
+    <span style="color: black"> {{ props.name + ': ' }} </span>
 
-      <input
-        v-model="current"
-        class="number-input"
-        type="number"
-        min="0"
-        pattern="[0-9]*"
-        style="color: black"
-      />
+    <input
+      v-model="current"
+      class="number-input"
+      type="number"
+      min="0"
+      pattern="[0-9]*"
+      style="color: black"
+    />
 
-      <span style="color: black"> {{ '/' + props.total }} </span>
+    <span style="color: black"> {{ '/' + props.total }} </span>
 
-      <input type="checkbox" id="checkbox" />
-    </UContainer>
-  </UCard>
+    <input type="checkbox" id="checkbox" />
+  </div>
 </template>
 
 <script setup>
@@ -59,5 +57,15 @@ const current = ref(0);
 /* Firefox */
 .number-input[type=number] {
   -moz-appearance: textfield;
+}
+
+.number-input {
+  background: transparent;
+}
+
+.item-container {
+  display: flex;
+  align-items: center;
+  gap: 0px 5px;
 }
 </style>
