@@ -17,8 +17,8 @@
         v-for="(name, i) in arrayPallete"
         :name="name"
         :image="listImage[i]"
-        :current="arrayCount[i]"
-        :total="arrayCount[i]"
+        :counter="arrayCount[i]"
+        @change-counter="(v) => setNewCounter(v, i)"
       />
     </div>
   </div>
@@ -28,10 +28,10 @@
 const { data } = await useFetch('/api/read');
 
 const schematic = data.value.value;
+const schematicName = data.value.value.Metadata.value.Name.value;
 
 // Вынести бы эту функцию куда-то. И getLitematicaPaletteIdx вместе с ней
-function getMaterialListForRegion(schematic, regionName, materialList = {}) {
-  console.log("getMaterialListForRegion: ")
+const getMaterialListForRegion = (schematic, regionName, materialList = {}) => {
   const region = schematic.Regions.value[regionName].value;
   if (!region) return materialList;
   const blockStates = schematic.Regions.value[regionName].value.BlockStates?.value;
@@ -60,7 +60,7 @@ function getMaterialListForRegion(schematic, regionName, materialList = {}) {
   return materialList;
 }
 
-function getLitematicaPaletteIdx(x, y, z, xsize, zsize, bits, blockStates) {
+const getLitematicaPaletteIdx = (x, y, z, xsize, zsize, bits, blockStates) => {
     let paletteIdx;
     const index = (y * xsize * zsize) + z * xsize + x;
 
@@ -88,38 +88,22 @@ function getLitematicaPaletteIdx(x, y, z, xsize, zsize, bits, blockStates) {
     return paletteIdx;
 }
 
-
 const regionNames = Object.keys(schematic.Regions.value);
 let materialList = regionNames.reduce((result, regionName) => {
   getMaterialListForRegion(schematic, regionName, result);
   return result;
 }, {})
 
-console.log("materialList: ", materialList)
+const arrayPallete = Object.keys(materialList)
+  .map(item => item.slice(10))
+  .filter(name => name !== 'air');
 
-const schematicName = data.value.value.Metadata.value.Name.value;
-
-const arrayPallete = [
-  ...new Set(
-    regionNames
-      .flatMap(regionName => schematic.Regions.value[regionName]?.value.BlockStatePalette?.value.value)
-      .map(item => item.Name.value.slice(10))
-      .filter(name => name !== 'air')
-  ),
-  'blue_orchid',
-  'brown_mushroom',
-  'blue_orchid',
-  'brown_mushroom',
-  'blue_orchid',
-  'brown_mushroom',
-  'blue_orchid',
-  'brown_mushroom',
-  'blue_orchid',
-  'brown_mushroom',
-  'blue_orchid',
-  'brown_mushroom',
-];
-const arrayCount = ref(new Array(arrayPallete.length).map((item) => item = { current: 0, total: 0 }));
+const arrayCount = reactive(Object.keys(materialList)
+  .filter(name => name !== 'minecraft:air')
+  .map((item) => item = { current: 0, total: materialList[item] }));
+const setNewCounter = (v, i) => {
+  arrayCount[i].current = v;
+};
 
 let listImage = reactive({});
 useFetch('/api/mc', {
