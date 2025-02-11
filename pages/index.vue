@@ -1,10 +1,13 @@
 <template>
   <div class="page">
     <UInput
-      v-if="true"
       type="file"
       size="sm"
       icon="i-heroicons-folder" 
+      accept=".litematic"
+      v-model="schemPath"
+      ref="fileInput"
+      @change="(files) => processFileInput(files)"
     />
 
     <span> {{ schematicName }} </span>
@@ -113,6 +116,23 @@ useFetch('/api/mc', {
   .then((res) => {
     listImage = res.data;
   });
+
+
+let schemPath = ref("");
+let fileInput = ref();
+const processFileInput = (files) => {
+  if (!files.length) {return;}
+  console.log("process file, pages: ", files)
+
+  useFetch('/api/processFile', {
+    method: 'PUT',
+    body: { file: files, name: "Test" },
+  })
+  .then((res) => {
+    // console.log(res.data)
+    console.log("something returned")
+  });
+}
 </script>
 
 <style lang="scss" scoped>
