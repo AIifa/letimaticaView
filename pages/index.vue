@@ -1,12 +1,12 @@
 <template>
   <div class="page">
     <UInput
+      v-model="schemPath"
+      ref="fileInput"
       type="file"
       size="sm"
       icon="i-heroicons-folder" 
       accept=".litematic"
-      v-model="schemPath"
-      ref="fileInput"
       @change="(files) => processFileInput(files)"
     />
 
@@ -118,15 +118,19 @@ useFetch('/api/mc', {
   });
 
 
-let schemPath = ref("");
-let fileInput = ref();
+const schemPath = ref("");
+const fileInput = ref(null);
 const processFileInput = (files) => {
   if (!files.length) {return;}
   console.log("process file, pages: ", files)
-
+  let data = new FormData()
+  data.append('file', files[0])
   useFetch('/api/processFile', {
-    method: 'PUT',
-    body: { file: files, name: "Test" },
+    method: 'POST',
+    headers: {
+      "Content-Type": "",
+    },
+    body: files[0].arrayBuffer(),
   })
   .then((res) => {
     // console.log(res.data)
