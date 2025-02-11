@@ -1,5 +1,8 @@
 <template>
-  <div class="item-container">
+  <div
+    class="item-container"
+    :class="{ 'disabled': checkboxValue }"
+  >
     <img
       class="mine-img"
       :src="'data:image/png;base64,' + props.image"
@@ -20,9 +23,11 @@
     <span style="color: black"> {{ '/' + props.counter.total }} </span>
 
     <input 
+      v-model="checkboxValue"
       class="mine-checkbox" 
       type="checkbox" 
       id="checkbox" 
+      @change="changeCheckbox"
     />
   </div>
 </template>
@@ -38,10 +43,6 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  // current: {
-  //   type: Number,
-  //   default: 0,
-  // },
   counter: {
     type: Object,
     default: () => {},
@@ -53,7 +54,13 @@ const inputNumber = (v) => {
   if (!v.data) {
     current.value = 0;
   }
-  emits('changeCounter', Number(v.data));
+  emits('changeCounter', Number(current.value));
+};
+
+const checkboxValue = ref(false);
+const changeCheckbox = (v) => {
+  current.value = v ? props.counter.total : 0;
+  inputNumber(current.value);
 };
 </script>
 
