@@ -11,16 +11,16 @@
     <span style="margin-left: 5px; color: black"> {{ props.name + ': ' }} </span>
 
     <input
-      v-model="current"
       class="number-input"
       type="number"
       min="0"
       pattern="[0-9]*"
-      :max="props.counter.total"
-      @input="inputNumber"
+      :max="props.counter?.total"
+      :value="current"
+      @input="v => inputNumber(v.target.value)"
     />
 
-    <span style="color: black"> {{ '/' + props.counter.total }} </span>
+    <span style="color: black"> {{ '/' + props.counter?.total }} </span>
 
     <input 
       v-model="checkboxValue"
@@ -49,17 +49,23 @@ const props = defineProps({
   },
 });
 
-const current = ref(props.counter.current);
+const current = ref(props.counter?.current);
 const inputNumber = (v) => {
-  if (!v.data) {
+  if (!v || v < 0) {
     current.value = 0;
   }
+
+  if (v >= props.counter?.total) {
+    current.value = props.counter?.total;
+  }
+
   emits('changeCounter', Number(current.value));
 };
 
 const checkboxValue = ref(false);
-const changeCheckbox = (v) => {
-  current.value = v ? props.counter.total : 0;
+const changeCheckbox = () => {
+  current.value = checkboxValue.value ? props.counter.total : 0;
+
   inputNumber(current.value);
 };
 </script>
@@ -94,6 +100,10 @@ const changeCheckbox = (v) => {
   margin-bottom: 2px;
 }
 
+.item-container.disabled {
+  background-color: #666666d4;
+}
+
 .mine-img {
   margin: 5px;
   border-radius: 5px;
@@ -106,6 +116,5 @@ const changeCheckbox = (v) => {
   margin-right: 5px;
   width: 20px;
   height: 20px;
-
 }
 </style>

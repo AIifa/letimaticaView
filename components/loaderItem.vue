@@ -8,7 +8,7 @@
 const prosp = defineProps({
   list: {
     type: Array,
-    default: [],
+    default: () => [],
   }
 });
 
