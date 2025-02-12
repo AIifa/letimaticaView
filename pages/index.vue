@@ -73,5 +73,27 @@ const setNewCounter = (v, i) => {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
+  height: 70vh;
+  margin: 0px 10px;
+  overflow-y: auto;
+}
+
+.mine-item-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.mine-item-container::-webkit-scrollbar-track {
+  border-radius: 100vh;
+  background: rgb(0 0 0 / 50%);
+}
+
+.mine-item-container::-webkit-scrollbar-thumb {
+  background: #8f8f8f23;
+  border-radius: 100vh;
+  border: 1px solid #000000;
+}
+
+.mine-item-container::-webkit-scrollbar-thumb:hover {
+  background: #8f8f8f6c;
 }
 </style>
