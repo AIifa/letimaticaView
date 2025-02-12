@@ -127,6 +127,7 @@ export default defineEventHandler(async (event) => {
         if (blocksUsingDifferentTexture.includes(shortName)) {
             texture = await getDifTextureFileForBlock(shortName);
         }
+        if (texture == null) { texture = await getTexture('misc/unknown_pack'); }
 
         let newItem = {
             name: shortName,
