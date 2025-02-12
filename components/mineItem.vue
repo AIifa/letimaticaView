@@ -8,7 +8,11 @@
       :src="'data:image/png;base64,' + props.image"
     >
 
-    <span style="margin-left: 5px; color: black"> {{ props.name + ': ' }} </span>
+    <span 
+      class="mine-name"
+    > 
+      {{ props.name + ': ' }} 
+    </span>
 
     <input
       class="number-input"
@@ -51,15 +55,15 @@ const props = defineProps({
 
 const current = ref(props.counter?.current);
 const inputNumber = (v) => {
-  if (!v || v < 0) {
+  v = Number(v);
+
+  if (!v || v <= 0) {
     current.value = 0;
+  } else if (v >= Number(props.counter?.total)) {
+    current.value = Number(props.counter?.total);
+  } else {
+    current.value = v;
   }
-
-  if (v >= props.counter?.total) {
-    current.value = props.counter?.total;
-  }
-
-  current.value = v;
 
   emits('changeCounter', Number(current.value));
 };
@@ -85,6 +89,12 @@ const changeCheckbox = () => {
   -moz-appearance: textfield;
 }
 
+.mine-name {
+  flex: 1 0;
+  margin-left: 5px;
+  color: black;
+}
+
 .number-input {
   background: transparent;
   field-sizing: content;
@@ -100,6 +110,7 @@ const changeCheckbox = () => {
   border-radius: 10px;
   margin-top: 2px;
   margin-bottom: 2px;
+  width: 250px;
 }
 
 .item-container.disabled {
