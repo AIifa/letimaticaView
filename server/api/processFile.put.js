@@ -88,7 +88,7 @@ export default defineEventHandler(async (event) => {
     // console.log("findItemOrBlockByName: ", mcAssets.findItemOrBlockByName(toFind))
     // console.log("getTexture: ", mcAssets.getTexture(toFind))
 
-    const blocksUsingItemImage = ['campfire', 'chain', 'lantern', 'iron_bars', 'hopper', 'lever', 'mushroom_stem', 'repeater', 'comparator', 'kelp', 'seagrass', 'oak_door', 'spruce_door', 'jungle_door', 'candle', 'white_candle', 'red_candle', 'orange_candle', 'cyan_candle', 'pointed_dripstone'];
+    const blocksUsingItemImage = ['campfire', 'chain', 'lantern', 'iron_bars', 'hopper', 'lever', 'mushroom_stem', 'repeater', 'comparator', 'kelp', 'seagrass', 'oak_door', 'spruce_door', 'jungle_door', 'birch_door', 'jungle_door', 'acacia_door', 'dark_oak_door', 'mangrove_door', 'cherry_door', 'pale_oak_door', 'bamboo_door', 'crimson_door', 'warped_door', 'iron_door', 'copper_door', 'exposed_copper_door', 'weathered_copper_door', 'oxidized_copper_door', 'waxed_copper_door', 'waxed_exposed_copper_door', 'waxed_weathered_copper_door', 'waxed_oxidized_copper_door', 'candle', 'white_candle', 'light_gray_candle', 'gray_candle', 'black_candle', 'brown_candle', 'red_candle', 'orange_candle', 'yellow_candle', 'lime_candle', 'green_candle', 'cyan_candle', 'light_blue_candle', 'blue_candle', 'purple_candle', 'magenta_candle', 'pink_candle', 'pointed_dripstone', 'bell'];
     const differentTexturesForBlocks = {
         'bone_block': 'blocks/bone_block_side', 'sticky_piston': 'blocks/piston_top_sticky', 'composter': 'blocks/composter_side', 'crafting_table': 'blocks/crafting_table_front', 'barrel': 'blocks/barrel_side', 'bee_nest': 'blocks/bee_nest_side', 'beehive': 'blocks/beehive_front_honey', 'bookshelf': 'blocks/bookshelf', 'chiseled_bookshelf': 'blocks/chiseled_bookshelf_empty', 'crimson_hyphae': 'blocks/crimson_stem_top'
     };
@@ -119,7 +119,7 @@ export default defineEventHandler(async (event) => {
         let texture = mcAssets.textureContent[shortName]?.texture && mcAssets.textureContent[shortName]?.texture.replace(/^data:image\/png;base64,/, '');
         
         // Тут чистка materialList от всяких air, правки путей и т.п.
-        if (shortName == "air" || shortName == "cave_air" || shortName == "void_air") { continue; }
+        if (shortName == "air" || shortName == "cave_air" || shortName == "void_air" || shortName == "water") { continue; }
         // У некоторых блоков путь к нужной текстуре отличается от просто названия блока; или текстуры блока хуже подходят для представления блока, чем текстура предмета
         if (blocksUsingItemImage.includes(shortName)) { 
             texture = await getItemFileForBlock(shortName);
