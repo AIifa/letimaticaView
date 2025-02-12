@@ -8,9 +8,9 @@
       @change="(files) => processFileInput(files)"
     />
 
-    <span> {{ schematicName }} </span>
+    <span v-if="schematicName"> {{ schematicName }} </span>
     <LoaderItem
-      v-if="listImage"
+      v-if="schematicName"
       :list="arrayCount"
     />
     <div 
@@ -18,7 +18,6 @@
       class="mine-item-container"
     >
       <MineItem
-        v-if="listImage"
         v-for="(material, i) in materialList"
         :name="material.name"
         :image="listImage[i]"
@@ -57,14 +56,17 @@ const processFileInput = (files) => {
 
 let arrayCount = ref([]);
 const setNewCounter = (v, i) => {
-  console.log(v)
   arrayCount.value[i].current = v;
 };
 </script>
 
 <style lang="scss" scoped>
 .page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
+  gap: 10px 0px;
 }
 
 .mine-item-container {

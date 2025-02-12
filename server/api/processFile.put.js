@@ -129,11 +129,11 @@ export default defineEventHandler(async (event) => {
         }
 
         let newItem = {
-            name: shortName,
+            name: shortName.replaceAll('_', ' '),
             amount: materialList[name],
             texture
-        }
-        result.push(newItem)
+        };
+        result.push(newItem);
     }
     // console.log("process file server result: ", result)
 

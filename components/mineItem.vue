@@ -107,6 +107,7 @@ const changeCheckbox = () => {
 .mine-img {
   margin: 5px;
   border-radius: 5px;
+  border: 1px solid #000000;
   height: 64px;
   image-rendering: pixelated;
 }

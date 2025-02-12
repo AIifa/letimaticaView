@@ -22,6 +22,9 @@ const sumListTotal = computed(() => {
 
 <style scoped>
 .loader {
+  width: 80vw;
   background-color: bisque;
+  flex: 1;
+  border-radius: 5px;
 }
 </style>
