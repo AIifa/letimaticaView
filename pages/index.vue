@@ -73,7 +73,8 @@ const setNewCounter = (v, i) => {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
-  height: 70vh;
+  align-items: center;
+  height: 73vh;
   margin: 0px 10px;
   overflow-y: auto;
 }

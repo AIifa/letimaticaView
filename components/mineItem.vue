@@ -11,16 +11,17 @@
     <span 
       class="mine-name"
     > 
-      {{ props.name + ': ' }} 
+      {{ props.name }} 
     </span>
 
     <input
+      v-model="current"
+      ref="input"
       class="number-input"
       type="number"
       min="0"
       pattern="[0-9]*"
       :max="props.counter?.total"
-      :value="current"
       @input="v => inputNumber(v.target.value)"
     />
 
@@ -53,16 +54,14 @@ const props = defineProps({
   },
 });
 
+const input = ref(null);
 const current = ref(props.counter?.current);
 const inputNumber = (v) => {
-  v = Number(v);
-
-  if (!v || v <= 0) {
+  if (!current.value || current.value <= 0 || current.value == Number('00')) {
     current.value = 0;
-  } else if (v >= Number(props.counter?.total)) {
+    input.value.value = 0;
+  } else if (current.value >= Number(props.counter?.total)) {
     current.value = Number(props.counter?.total);
-  } else {
-    current.value = v;
   }
 
   emits('changeCounter', Number(current.value));
@@ -108,9 +107,9 @@ const changeCheckbox = () => {
   align-items: center;
   background-color: #f0f8ffd1;
   border-radius: 10px;
-  margin-top: 2px;
-  margin-bottom: 2px;
-  width: 250px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 270px;
 }
 
 .item-container.disabled {
