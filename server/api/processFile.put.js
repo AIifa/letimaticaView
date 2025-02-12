@@ -4,6 +4,9 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const mcAssets = require('minecraft-assets')('1.21.1');
 
+import * as path from 'node:path';
+import * as fs from 'node:fs';
+
 export default defineEventHandler(async (event) => {
     const body = await readMultipartFormData(event); // array of files sent (1 file, in our case)
     const { parsed, type } = await nbt.parse(body[0]?.data); // parsed is Minecraft litematica, basically
@@ -74,18 +77,65 @@ export default defineEventHandler(async (event) => {
         return result;
     }, {})
     console.log("materialList: ", materialList)
+    
+    // let toFind = "grindstone";
+    // console.log("blocks: ", mcAssets.blocks[toFind])
+    // console.log("blocksArray: ", mcAssets.blocksArray[toFind])
+    // console.log("items: ", mcAssets.items[toFind])
+    // console.log("itemsArray: ", mcAssets.itemsArray[toFind])
+    // console.log("textureContent: ", mcAssets.textureContent[toFind])
+    // console.log("textureContentArray: ", mcAssets.textureContentArray[toFind])
+    // console.log("findItemOrBlockByName: ", mcAssets.findItemOrBlockByName(toFind))
+    // console.log("getTexture: ", mcAssets.getTexture(toFind))
+
+    const blocksUsingItemImage = ['campfire', 'chain', 'lantern', 'iron_bars', 'hopper', 'lever', 'mushroom_stem', 'repeater', 'comparator', 'kelp', 'seagrass', 'oak_door', 'spruce_door', 'jungle_door', 'candle', 'white_candle', 'red_candle', 'orange_candle', 'cyan_candle', 'pointed_dripstone'];
+    const differentTexturesForBlocks = {
+        'bone_block': 'blocks/bone_block_side', 'sticky_piston': 'blocks/piston_top_sticky', 'composter': 'blocks/composter_side', 'crafting_table': 'blocks/crafting_table_front', 'barrel': 'blocks/barrel_side', 'bee_nest': 'blocks/bee_nest_side', 'beehive': 'blocks/beehive_front_honey', 'bookshelf': 'blocks/bookshelf', 'chiseled_bookshelf': 'blocks/chiseled_bookshelf_empty', 'crimson_hyphae': 'blocks/crimson_stem_top'
+    };
+    const blocksUsingDifferentTexture = Object.keys(differentTexturesForBlocks);
+    // grindstone, end_rod, *_wall, *_fence, *_button, *_slab, *_stairs, *_bed, redstone_wire, sticky_piston, decorated_pot - нет текстуры, видимо, собирается из кусочков/других текстур?
+    // prismarine, magma_block - нет квадратной текстуры, т.к.есть анимация
+
+    // Gets texture from /./node_modules/minecraft-assets/minecraft-assets/data/1.21.1/ some item path .png
+    const getTexture = async (itemPath) => {
+        const filePath = path.join(process.cwd(), '/./node_modules/minecraft-assets/minecraft-assets/data/1.21.1', itemPath + '.png');
+        const dataFile = await fs.promises.readFile(filePath);
+        return dataFile.toString('base64');
+    }
+    // For cases where we want block to use it's item texture
+    const getItemFileForBlock = async (blockName) => {
+        const itemPath = mcAssets.items[blockName]?.texture.replace("minecraft:", "").replace("block/", "blocks/");
+        return await getTexture(itemPath);
+    }
+    // For cases where we want block to use other texture
+    const getDifTextureFileForBlock = async (blockName) => {
+        const itemPath = differentTexturesForBlocks[blockName] || "";
+        return await getTexture(itemPath);
+    }
 
     const result = [];
     for (let name in materialList) {
-        let newItem = {
-            name: name.slice(10),
-            amount: materialList[name],
-            texture: mcAssets.textureContent[name.slice(10)]?.texture && mcAssets.textureContent[name.slice(10)]?.texture.replace(/^data:image\/png;base64,/, '')
+        const shortName = name.slice(10);
+        let texture = mcAssets.textureContent[shortName]?.texture && mcAssets.textureContent[shortName]?.texture.replace(/^data:image\/png;base64,/, '');
+        
+        // Тут чистка materialList от всяких air, правки путей и т.п.
+        if (shortName == "air" || shortName == "cave_air" || shortName == "void_air") { continue; }
+        // У некоторых блоков путь к нужной текстуре отличается от просто названия блока; или текстуры блока хуже подходят для представления блока, чем текстура предмета
+        if (blocksUsingItemImage.includes(shortName)) { 
+            texture = await getItemFileForBlock(shortName);
         }
-        // console.log(name, newItem)
+        if (blocksUsingDifferentTexture.includes(shortName)) {
+            texture = await getDifTextureFileForBlock(shortName);
+        }
+
+        let newItem = {
+            name: shortName,
+            amount: materialList[name],
+            texture
+        }
         result.push(newItem)
     }
-    console.log("process file server result: ", result)
+    // console.log("process file server result: ", result)
 
     return { materials: result, name: schematic.Metadata.value.Name.value };
 });
