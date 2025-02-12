@@ -59,6 +59,8 @@ const inputNumber = (v) => {
     current.value = props.counter?.total;
   }
 
+  current.value = v;
+
   emits('changeCounter', Number(current.value));
 };
 
