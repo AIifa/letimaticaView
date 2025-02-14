@@ -5,6 +5,8 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
@@ -20,6 +22,7 @@
     "vue-router": "latest"
   },
   "devDependencies": {
+    "@nuxt/eslint": "^1.0.1",
     "@nuxt/ui": "^2.21.0"
   }
 }

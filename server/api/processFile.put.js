@@ -1,15 +1,15 @@
+import * as path from 'node:path';
+import * as fs from 'node:fs';
+
 import nbt from 'prismarine-nbt';
 
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const mcAssets = require('minecraft-assets')('1.21.1');
 
-import * as path from 'node:path';
-import * as fs from 'node:fs';
-
 export default defineEventHandler(async (event) => {
     const body = await readMultipartFormData(event); // array of files sent (1 file, in our case)
-    const { parsed, type } = await nbt.parse(body[0]?.data); // parsed is Minecraft litematica, basically
+    const { parsed } = await nbt.parse(body[0]?.data); // parsed is Minecraft litematica, basically
     console.log("processFile server side: ", parsed)
 
     const getMaterialListForRegion = (schematic, regionName, materialList = {}) => {

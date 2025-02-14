@@ -15,25 +15,24 @@
     </span>
 
     <input
-      v-model="current"
       ref="input"
+      v-model="current"
       class="number-input"
       type="number"
       min="0"
       pattern="[0-9]*"
       :max="props.counter?.total"
-      @input="v => inputNumber(v.target.value)"
-    />
+      @input="inputNumber"
+    >
 
     <span style="color: black"> {{ '/' + props.counter?.total }} </span>
 
     <input 
       v-model="checkboxValue"
-      class="mine-checkbox" 
-      type="checkbox" 
-      id="checkbox" 
+      class="mine-checkbox"
+      type="checkbox"
       @change="changeCheckbox"
-    />
+    >
   </div>
 </template>
 
@@ -56,7 +55,7 @@ const props = defineProps({
 
 const input = ref(null);
 const current = ref(props.counter?.current);
-const inputNumber = (v) => {
+const inputNumber = () => {
   if (!current.value || current.value <= 0 || current.value == Number('00')) {
     current.value = 0;
     input.value.value = 0;

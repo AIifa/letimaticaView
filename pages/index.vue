@@ -18,7 +18,7 @@
       class="mine-item-container"
     >
       <MineItem
-        v-for="(material, i) in materialList"
+        v-for="(material, i) in materialList" :key="material.name + i"
         :name="material.name"
         :image="listImage[i]"
         :counter="arrayCount[i]"
@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-let schematicName = ref('');
+const schematicName = ref('');
 let listImage = reactive({});
 let materialList = reactive([]);
 const processFileInput = (files) => {
@@ -46,7 +46,7 @@ const processFileInput = (files) => {
     schematicName.value = res.data.value.name;
     materialList = res.data.value.materials;
 
-    let namesList = materialList.map(material => material.name);
+    const namesList = materialList.map(material => material.name);
     arrayCount.value = namesList
       .map((item, index) => item = { current: 0, total: materialList[index].amount });
 
@@ -54,7 +54,7 @@ const processFileInput = (files) => {
   });
 };
 
-let arrayCount = ref([]);
+const arrayCount = ref([]);
 const setNewCounter = (v, i) => {
   arrayCount.value[i].current = v;
 };
