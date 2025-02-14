@@ -79,22 +79,42 @@ export default defineEventHandler(async (event) => {
     console.log("materialList: ", materialList)
 
     // Чистка всяких дублирующихся предметов (например, что torch и wall torch по-хорошему выводиться должны как torch с общим их колвом)
+    // Функция убирает блок-дубль, где name это имя настенного блока, а у "нормального" блока нет wall_ в названии
+    const removeWallDoubleItem = (wallName) => {
+        if (!materialList[wallName]) { return; }
+        const name = wallName.replace("wall_", "");
+        materialList[name] = materialList[name] || 0; 
+        materialList[name] +=materialList[wallName];
+        delete materialList[wallName];
+    }
     // Факела
-    if (materialList['minecraft:wall_torch']) { 
-        materialList['minecraft:torch'] = materialList['minecraft:torch'] || 0; 
-        materialList['minecraft:torch'] +=materialList['minecraft:wall_torch'];
-        delete materialList['minecraft:wall_torch'];
-    }
-    if (materialList['minecraft:redstone_wall_torch']) { 
-        materialList['minecraft:redstone_torch'] = materialList['minecraft:redstone_torch'] || 0; 
-        materialList['minecraft:redstone_torch'] +=materialList['minecraft:redstone_wall_torch'];
-        delete materialList['minecraft:redstone_wall_torch'];
-    }
+    removeWallDoubleItem('minecraft:wall_torch');
+    removeWallDoubleItem('minecraft:redstone_wall_torch');
+    // Таблички настенные
+    removeWallDoubleItem('minecraft:oak_wall_sign');
+    removeWallDoubleItem('minecraft:birch_wall_sign');
+    removeWallDoubleItem('minecraft:spruce_wall_sign');
+    removeWallDoubleItem('minecraft:jungle_wall_sign');
+    removeWallDoubleItem('minecraft:dark_oak_wall_sign');
+    removeWallDoubleItem('minecraft:acacia_wall_sign');
+    removeWallDoubleItem('minecraft:mangrove_wall_sign');
+    removeWallDoubleItem('minecraft:cherry_wall_sign');
+    removeWallDoubleItem('minecraft:bamboo_wall_sign');
+    removeWallDoubleItem('minecraft:warped_wall_sign');
+    removeWallDoubleItem('minecraft:crimson_wall_sign');
+    // Головы
+    removeWallDoubleItem('minecraft:zombie_wall_skull');
+    removeWallDoubleItem('minecraft:skeleton_wall_skull');
+    removeWallDoubleItem('minecraft:wither_skeleton_wall_skull');
+    removeWallDoubleItem('minecraft:player_wall_head');
+    
+
     // to-do: чекнуть как litematica сохраняет поршни (т.к.piston и piston_head это разные блоки, надо ли делить на 2 итоговое колво и т.п.)
     // skulls в зависимости от их положения (wall или нет)
     // Блоки, с которыми могут быть потенциально проблемы:
     // tripwire hook (и его части)
     // двери (их колво)
+    // bubble column - убирать из списка материалов или как-то по-другому отображать?
     
     // let toFind = "grindstone";
     // console.log("blocks: ", mcAssets.blocks[toFind])
@@ -114,8 +134,12 @@ export default defineEventHandler(async (event) => {
     const handmadeTextures = {
         'prismarine': 'prismarine_basic.png',
         'stonecutter': 'stonecutter.webp',
+        'grindstone': 'grindstone.webp',
+        'lectern': 'lectern.webp',
         'tall_seagrass': 'tall_seagrass.webp',
         'sculk_shrieker': 'sculk_shrieker.webp',
+        'chest': 'chest.webp',
+        'trapped_chest': 'trapped_chest.webp',
         // Beds
         'white_bed': 'white_bed.webp',
         'light_gray_bed': 'light_gray_bed.webp',
@@ -151,11 +175,11 @@ export default defineEventHandler(async (event) => {
         'polished_deepslate_stairs': 'polished_deepslate_stairs.webp',
 
         'cut_copper_stairs': 'cut_copper_stairs.webp',
-        'waxed_cut_copper_stairs': 'waxed_cut_copper_stairs.webp',
+        'waxed_cut_copper_stairs': 'cut_copper_stairs.webp',
         'exposed_cut_copper_stairs': 'exposed_cut_copper_stairs.webp',
-        'waxed_exposed_cut_copper_stairs': 'waxed_exposed_cut_copper_stairs.webp',
+        'waxed_exposed_cut_copper_stairs': 'exposed_cut_copper_stairs.webp',
         'weathered_cut_copper_stairs': 'weathered_cut_copper_stairs.webp',
-        'waxed_weathered_cut_copper_stairs': 'waxed_weathered_cut_copper_stairs.webp',
+        'waxed_weathered_cut_copper_stairs': 'weathered_cut_copper_stairs.webp',
         'oxidized_cut_copper_stairs': 'oxidized_cut_copper_stairs.webp',
         'waxed_oxidized_cut_copper_stairs': 'oxidized_cut_copper_stairs.webp',
 
@@ -192,10 +216,101 @@ export default defineEventHandler(async (event) => {
         'polished_granite_stairs': 'polished_granite_stairs.webp',
         'diorite_stairs': 'diorite_stairs.webp',
         'polished_diorite_stairs': 'polished_diorite_stairs.webp',
+        // Slabs
+        'oak_slab': 'oak_slab.webp',
+        'spruce_slab': 'spruce_slab.webp',
+        'birch_slab': 'birch_slab.webp',
+        'jungle_slab': 'jungle_slab.webp',
+        'acacia_slab': 'acacia_slab.webp',
+        'dark_oak_slab': 'dark_oak_slab.webp',
+        'mangrove_slab': 'mangrove_slab.webp',
+        'cherry_slab': 'cherry_slab.webp',
+        'bamboo_slab': 'bamboo_slab.webp',
+        'bamboo_mosaic_slab': 'bamboo_mosaic_slab.webp',
+        'crimson_slab': 'crimson_slab.webp',
+        'warped_slab': 'warped_slab.webp',
+        'stone_slab': 'stone_slab.webp',
+        'cobblestone_slab': 'cobblestone_slab.webp',
+        'mossy_cobblestone_slab': 'mossy_cobblestone_slab.webp',
+        'smooth_stone_slab': 'smooth_stone_slab.webp',
+        'stone_brick_slab': 'stone_brick_slab.webp',
+        'mossy_stone_brick_slab': 'mossy_stone_brick_slab.webp',
+        'granite_slab': 'granite_slab.webp',
+        'polished_granite_slab': 'polished_granite_slab.webp',
+        'diorite_slab': 'diorite_slab.webp',
+        'polished_diorite_slab': 'polished_diorite_slab.webp',
+        'andesite_slab': 'andesite_slab.webp',
+        'polished_andesite_slab': 'polished_andesite_slab.webp',
+        'cobbled_deepslate_slab': 'cobbled_deepslate_slab.webp',
+        'polished_deepslate_slab': 'polished_deepslate_slab.webp',
+        'deepslate_brick_slab': 'deepslate_brick_slab.webp',
+        'deepslate_tile_slab': 'deepslate_tile_slab.webp',
+        'brick_slab': 'brick_slab.webp',
+        'mud_brick_slab': 'mud_brick_slab.webp',
+        'sandstone_slab': 'sandstone_slab.webp',
+        'smooth_sandstone_slab': 'smooth_sandstone_slab.webp',
+        'cut_sandstone_slab': 'cut_sandstone_slab.webp',
+        'red_sandstone_slab': 'red_sandstone_slab.webp',
+        'smooth_red_sandstone_slab': 'smooth_red_sandstone_slab.webp',
+        'cut_red_sandstone_slab': 'cut_red_sandstone_slab.webp',
+        'prismarine_slab': 'prismarine_slab.webp',
+        'prismarine_brick_slab': 'prismarine_brick_slab.webp',
+        'dark_prismarine_slab': 'dark_prismarine_slab.webp',
+        'nether_brick_slab': 'nether_brick_slab.webp',
+        'red_nether_brick_slab': 'red_nether_brick_slab.webp',
+        'blackstone_slab': 'blackstone_slab.webp',
+        'polished_blackstone_slab': 'polished_blackstone_slab.webp',
+        'polished_blackstone_brick_slab': 'polished_blackstone_brick_slab.webp',
+        'end_stone_brick_slab': 'end_stone_brick_slab.webp',
+        'purpur_slab': 'purpur_slab.webp',
+        'quartz_slab': 'quartz_slab.webp',
+        'smooth_quartz_slab': 'smooth_quartz_slab.webp',
+        'cut_copper_slab': 'cut_copper_slab.webp',
+        'exposed_cut_copper_slab': 'exposed_cut_copper_slab.webp',
+        'weathered_cut_copper_slab': 'weathered_cut_copper_slab.webp',
+        'oxidized_cut_copper_slab': 'oxidized_cut_copper_slab.webp',
+        'waxed_cut_copper_slab': 'cut_copper_slab.webp',
+        'waxed_exposed_cut_copper_slab': 'exposed_cut_copper_slab.webp',
+        'waxed_weathered_cut_copper_slab': 'weathered_cut_copper_slab.webp',
+        'waxed_oxidized_cut_copper_slab': 'oxidized_cut_copper_slab.webp',
+        'tuff_slab': 'tuff_slab.webp',
+        'polished_tuff_slab': 'polished_tuff_slab.webp',
+        'tuff_brick_slab': 'tuff_brick_slab.webp',
+        // Signs
+        'oak_sign': 'oak_sign.webp',
+        'spruce_sign': 'spruce_sign.webp',
+        'birch_sign': 'birch_sign.webp',
+        'jungle_sign': 'jungle_sign.webp',
+        'acacia_sign': 'acacia_sign.webp',
+        'dark_oak_sign': 'dark_oak_sign.webp',
+        'mangrove_sign': 'mangrove_sign.webp',
+        'cherry_sign': 'cherry_sign.webp',
+        'bamboo_sign': 'bamboo_sign.webp',
+        'crimson_sign': 'crimson_sign.webp',
+        'warped_sign': 'warped_sign.webp',
+        'oak_hanging_sign': 'oak_hanging_sign.webp',
+        'spruce_hanging_sign': 'spruce_hanging_sign.webp',
+        'birch_hanging_sign': 'birch_hanging_sign.webp',
+        'jungle_hanging_sign': 'jungle_hanging_sign.webp',
+        'acacia_hanging_sign': 'acacia_hanging_sign.webp',
+        'dark_oak_hanging_sign': 'dark_oak_hanging_sign.webp',
+        'mangrove_hanging_sign': 'mangrove_hanging_sign.webp',
+        'cherry_hanging_sign': 'cherry_hanging_sign.webp',
+        'bamboo_hanging_sign': 'bamboo_hanging_sign.webp',
+        'crimson_hanging_sign': 'crimson_hanging_sign.webp',
+        'warped_hanging_sign': 'warped_hanging_sign.webp',
+        // Заборы/ограды
+        // Нажимные плиты
+        // Кнопки
+        // Ковры
+        // Калитки
+        // Баннеры
+        // glow lichen, sculk vein, котел с водой, котел с лавой, ender chest
     }
     const blocksWithHandmadeTextures = Object.keys(handmadeTextures);
-    // grindstone, end_rod, *_wall, *_fence, *_button, *_slab, *_stairs, *_bed, redstone_wire, sticky_piston, decorated_pot - нет текстуры, видимо, собирается из кусочков/других текстур?
-    // prismarine, magma_block - нет квадратной текстуры, т.к.есть анимация
+    // end_rod, *_wall, *_fence, *_button, redstone_wire, decorated_pot - нет текстуры, видимо, собирается из кусочков/других текстур?
+    // prismarine, magma_block, sea lantern - нет квадратной текстуры, т.к.есть анимация
+    // cartography table, мб еще какие-то блоки работ
 
     // Gets texture from /./node_modules/minecraft-assets/minecraft-assets/data/1.21.1/ some item path .png
     const getMcAssetsTexture = async (itemPath) => {
@@ -226,7 +341,7 @@ export default defineEventHandler(async (event) => {
         let texture = mcAssets.textureContent[shortName]?.texture && mcAssets.textureContent[shortName]?.texture.replace(/^data:image\/png;base64,/, '');
         
         // Тут чистка materialList от всяких air, правки путей и т.п.
-        if (shortName == "air" || shortName == "cave_air" || shortName == "void_air" || shortName == "water") { continue; }
+        if (shortName == "air" || shortName == "cave_air" || shortName == "void_air" || shortName == "water" || shortName == "fire" || shortName == "soul_fire") { continue; }
         // У некоторых блоков путь к нужной текстуре отличается от просто названия блока; или текстуры блока хуже подходят для представления блока, чем текстура предмета
         if (blocksUsingItemImage.includes(shortName)) { 
             texture = await getItemFileForBlock(shortName);
