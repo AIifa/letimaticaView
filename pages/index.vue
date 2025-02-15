@@ -30,6 +30,7 @@
 
 <script setup>
 const schematicName = ref('');
+const arrayCount = ref([]);
 let listImage = reactive({});
 let materialList = reactive([]);
 const processFileInput = (files) => {
@@ -37,7 +38,7 @@ const processFileInput = (files) => {
 
   const formData = new FormData();
   formData.append("file", files[0]);
-
+ 
   useFetch('/api/processFile', {
     method: 'PUT',
     body: formData,
@@ -51,13 +52,30 @@ const processFileInput = (files) => {
       .map((item, index) => item = { current: 0, total: materialList[index].amount });
 
     listImage = materialList.map(material => material.texture);
+
+    localStorage.setItem('litematicData', JSON.stringify({
+      'schematicName': schematicName.value,
+      'arrayCount': arrayCount.value,
+      materialList,
+      listImage
+    }));
   });
 };
 
-const arrayCount = ref([]);
 const setNewCounter = (v, i) => {
   arrayCount.value[i].current = v;
 };
+
+onMounted(() => {
+  const litematicData = JSON.parse(localStorage.getItem('litematicData'));
+  console.log(litematicData)
+  if (litematicData) {
+    schematicName.value = litematicData.schematicName;
+    materialList = litematicData.materialList;
+    arrayCount.value = litematicData.arrayCount;
+    listImage = litematicData.listImage;
+  }
+});
 </script>
 
 <style lang="scss" scoped>
