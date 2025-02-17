@@ -1,7 +1,11 @@
 import mongoose from 'mongoose';
 
 export default defineNitroPlugin(async () => {
-  // const URL = useRuntimeConfig().MONGODB_URL;
-  // await mongoose.connect(URL);
-  console.log(`MongoDB: connection successful! `)
+  try {
+    const URL = useRuntimeConfig().MONGODB_URL;
+    await mongoose.connect(URL);
+    console.log(`MongoDB: connection successful! `)
+  } catch (error) {
+    handleError(error);
+  }
 });

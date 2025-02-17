@@ -2,10 +2,12 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 
 import nbt from 'prismarine-nbt';
+import { Schema, model } from 'mongoose';
 
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const mcAssets = require('minecraft-assets')('1.21.1');
+
 
 export default defineEventHandler(async (event) => {
     const body = await readMultipartFormData(event); // array of files sent (1 file, in our case)
@@ -126,7 +128,7 @@ export default defineEventHandler(async (event) => {
     // console.log("findItemOrBlockByName: ", mcAssets.findItemOrBlockByName(toFind))
     // console.log("getTexture: ", mcAssets.getTexture(toFind))
 
-    const blocksUsingItemImage = ['campfire', 'soul_campfire', 'chain', 'lantern', 'soul_lantern', 'iron_bars', 'hopper', 'lever', 'mushroom_stem', 'repeater', 'comparator', 'kelp', 'seagrass', 'oak_door', 'spruce_door', 'jungle_door', 'birch_door', 'jungle_door', 'acacia_door', 'dark_oak_door', 'mangrove_door', 'cherry_door', 'pale_oak_door', 'bamboo_door', 'crimson_door', 'warped_door', 'iron_door', 'copper_door', 'exposed_copper_door', 'weathered_copper_door', 'oxidized_copper_door', 'waxed_copper_door', 'waxed_exposed_copper_door', 'waxed_weathered_copper_door', 'waxed_oxidized_copper_door', 'candle', 'white_candle', 'light_gray_candle', 'gray_candle', 'black_candle', 'brown_candle', 'red_candle', 'orange_candle', 'yellow_candle', 'lime_candle', 'green_candle', 'cyan_candle', 'light_blue_candle', 'blue_candle', 'purple_candle', 'magenta_candle', 'pink_candle', 'pointed_dripstone', 'bell'];
+    const blocksUsingItemImage = ['campfire', 'soul_campfire', 'chain', 'lantern', 'soul_lantern', 'iron_bars', 'hopper', 'lever', 'mushroom_stem', 'repeater', 'comparator', 'kelp', 'seagrass', 'oak_door', 'spruce_door', 'jungle_door', 'birch_door', 'jungle_door', 'acacia_door', 'dark_oak_door', 'mangrove_door', 'cherry_door', 'bamboo_door', 'crimson_door', 'warped_door', 'iron_door', 'copper_door', 'exposed_copper_door', 'weathered_copper_door', 'oxidized_copper_door', 'waxed_copper_door', 'waxed_exposed_copper_door', 'waxed_weathered_copper_door', 'waxed_oxidized_copper_door', 'candle', 'white_candle', 'light_gray_candle', 'gray_candle', 'black_candle', 'brown_candle', 'red_candle', 'orange_candle', 'yellow_candle', 'lime_candle', 'green_candle', 'cyan_candle', 'light_blue_candle', 'blue_candle', 'purple_candle', 'magenta_candle', 'pink_candle', 'pointed_dripstone', 'bell']; // 'pale_oak_door' (not yet)
     const differentTexturesForBlocks = {
         'bone_block': 'blocks/bone_block_side', 'sticky_piston': 'blocks/piston_top_sticky', 'composter': 'blocks/composter_side', 'crafting_table': 'blocks/crafting_table_front', 'barrel': 'blocks/barrel_side', 'bee_nest': 'blocks/bee_nest_side', 'beehive': 'blocks/beehive_front_honey', 'bookshelf': 'blocks/bookshelf', 'chiseled_bookshelf': 'blocks/chiseled_bookshelf_empty', 'crimson_hyphae': 'blocks/crimson_stem_top', 'grass_block': 'blocks/grass_block_side', 'crafter': 'blocks/crafter_top'
     };
@@ -145,7 +147,7 @@ export default defineEventHandler(async (event) => {
     }
     // For cases where we want block to use other texture
     const getDifTextureFileForBlock = async (blockName) => {
-        const itemPath = differentTexturesForBlocks[blockName] || "";
+        const itemPath = differentTexturesForBlocks[blockName] || "misc/unknown_pack";
         return await getMcAssetsTexture(itemPath);
     }
 
@@ -153,7 +155,7 @@ export default defineEventHandler(async (event) => {
     for (let name in materialList) {
         const shortName = name.slice(10);
         // Тут чистка materialList от всяких air и подобного
-        if (shortName == "air" || shortName == "cave_air" || shortName == "void_air" || shortName == "water" || shortName == "fire" || shortName == "soul_fire") { continue; }
+        if (shortName == "air" || shortName == "cave_air" || shortName == "void_air" || shortName == "water" || shortName == "fire" || shortName == "soul_fire" || shortName == "bubble_column") { continue; }
 
         let texture = '';
         // Пробуем найти текстуру среди вручную загруженных текстур
@@ -172,6 +174,7 @@ export default defineEventHandler(async (event) => {
             const dataFile = await fs.promises.readFile(filePath);
             // return dataFile.toString('base64');
             texture = dataFile.toString('base64');
+            console.log("Converted texture: ", texture)
         } catch (error) {
             console.log(error);
             texture = mcAssets.textureContent[shortName]?.texture && mcAssets.textureContent[shortName]?.texture.replace(/^data:image\/png;base64,/, '');
@@ -192,6 +195,19 @@ export default defineEventHandler(async (event) => {
             texture
         };
         result.push(newItem);
+    }
+    if (result.length) {
+        try {
+            const texture = result[0].texture || 'nothing here';
+            const newSchema = new Schema({texture: {type: String}});
+            const mc = model('minecraft', newSchema);
+            await mc.create({ texture: texture });
+            await mc.insertOne({texture: `${texture}______1`})
+            //await mc.create({ texture: `${texture}______1` });
+            console.log(texture)
+        } catch (error) {
+            console.log(error)
+        }
     }
     // console.log("process file server result: ", result)
 

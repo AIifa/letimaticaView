@@ -9,5 +9,8 @@ export default defineNuxtConfig({
         target: 'esnext'
       }
     }
+  },
+  runtimeConfig: {
+    MONGODB_URL: process.env.MONGODB_URL,
   }
 })
