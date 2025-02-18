@@ -4,8 +4,8 @@ export default defineNitroPlugin(async () => {
   try {
     const URL = useRuntimeConfig().MONGODB_URL;
     await mongoose.connect(URL);
-    console.log(`MongoDB: connection successful! `)
+    console.log('MongoDB connection: ' + mongoose.connection.readyState)
   } catch (error) {
-    handleError(error);
+    console.error(error);
   }
 });

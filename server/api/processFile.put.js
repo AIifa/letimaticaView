@@ -2,7 +2,8 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 
 import nbt from 'prismarine-nbt';
-import { Schema, model } from 'mongoose';
+
+import ImageCollection from '../models/imageCollection.js';
 
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -12,7 +13,7 @@ const mcAssets = require('minecraft-assets')('1.21.1');
 export default defineEventHandler(async (event) => {
     const body = await readMultipartFormData(event); // array of files sent (1 file, in our case)
     const { parsed } = await nbt.parse(body[0]?.data); // parsed is Minecraft litematica, basically
-    console.log("processFile server side: ", parsed)
+    // console.log("processFile server side: ", parsed)
 
     const getMaterialListForRegion = (schematic, regionName, materialList = {}) => {
         const region = schematic.Regions.value[regionName].value;
@@ -151,6 +152,25 @@ export default defineEventHandler(async (event) => {
         return await getMcAssetsTexture(itemPath);
     }
 
+    const texturesPath = path.join(process.cwd(), '/./public/mc_textures');
+    let availableTextures;
+    try {
+        const files = await fs.promises.readdir(texturesPath);
+        availableTextures = files.filter(file => path.extname(file).toLowerCase() === '.webp');
+        console.log(availableTextures);
+
+        availableTextures.forEach(async (textureFileName) =>  {
+            const filePath = path.join(texturesPath, textureFileName);
+            const dataFile = await fs.promises.readFile(filePath);
+            let texture = dataFile.toString('base64');
+
+            setNewTextureInDatabase(texture, textureFileName.replaceAll('.webp', ''));
+        });
+    } catch (error) {
+        console.error('Error reading mc_textures directory:', error);
+        availableTextures = [];
+    }
+
     const result = [];
     for (let name in materialList) {
         const shortName = name.slice(10);
@@ -174,9 +194,12 @@ export default defineEventHandler(async (event) => {
             const dataFile = await fs.promises.readFile(filePath);
             // return dataFile.toString('base64');
             texture = dataFile.toString('base64');
-            console.log("Converted texture: ", texture)
+
+            // setNewTextureInDatabase(texture, shortName);
+
+            // console.log("Converted texture: ", texture)
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             texture = mcAssets.textureContent[shortName]?.texture && mcAssets.textureContent[shortName]?.texture.replace(/^data:image\/png;base64,/, '');
         }
         
@@ -196,20 +219,25 @@ export default defineEventHandler(async (event) => {
         };
         result.push(newItem);
     }
-    if (result.length) {
-        try {
-            const texture = result[0].texture || 'nothing here';
-            const newSchema = new Schema({texture: {type: String}});
-            const mc = model('minecraft', newSchema);
-            await mc.create({ texture: texture });
-            await mc.insertOne({texture: `${texture}______1`})
-            //await mc.create({ texture: `${texture}______1` });
-            console.log(texture)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    // console.log("process file server result: ", result)
 
     return { materials: result, name: schematic.Metadata.value.Name.value };
 });
+
+const setNewTextureInDatabase = async (texture, shortName) => {
+    let newTexture = {
+        name: shortName.replaceAll('_', ' '),
+        texture
+    };
+    const curDoc = await ImageCollection.findOne({ name: newTexture.name });
+    console.log('\n')
+    console.log(curDoc?.name)
+    if (curDoc?.name && curDoc?.texture !== newTexture?.texture) {
+        await ImageCollection.updateOne({ name: newTexture.name }, { $set: { texture: newTexture.texture } });
+        console.log(`Texture find and updated`)
+    } else if (!curDoc?.name) {
+        await ImageCollection.insertOne(newTexture);
+        console.log(`Texture for added`)
+    } else {
+        console.log(`Texture is already in the database`)
+    }
+};
