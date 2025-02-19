@@ -1,30 +1,36 @@
 <template>
   <div class="page">
-    <UInput
-      type="file"
-      size="sm"
-      icon="i-heroicons-folder" 
-      accept=".litematic"
-      @change="(files) => processFileInput(files)"
-    />
-
-    <span v-if="schematicName"> {{ schematicName }} </span>
-    <LoaderItem
-      v-if="schematicName"
-      :list="arrayCount"
-    />
-    <div 
-      v-if="schematicName"
-      class="mine-item-container"
-    >
-      <MineItem
-        v-for="(material, i) in materialList" :key="material.name + i"
-        :name="material.name"
-        :image="listImage[i]"
-        :counter="arrayCount[i]"
-        @change-counter="(v) => setNewCounter(v, i)"
-      />
+    <div v-if="isLoading" class="loading-overlay">
+      <div class="loading-spinner" />
     </div>
+
+    <template v-else>
+      <UInput
+        type="file"
+        size="sm"
+        icon="i-heroicons-folder" 
+        accept=".litematic"
+        @change="(files) => processFileInput(files)"
+      />
+
+      <span v-if="schematicName"> {{ schematicName }} </span>
+      <LoaderItem
+        v-if="schematicName"
+        :list="arrayCount"
+      />
+      <div 
+        v-if="schematicName"
+        class="mine-item-container"
+      >
+        <MineItem
+          v-for="(material, i) in materialList" :key="material.name + i"
+          :name="material.name"
+          :image="listImage[i]"
+          :counter="arrayCount[i]"
+          @change-counter="(v) => setNewCounter(v, i)"
+        />
+      </div>
+    </template>
   </div>
 </template>
 
@@ -33,12 +39,14 @@ const schematicName = ref('');
 const arrayCount = ref([]);
 let listImage = reactive({});
 let materialList = reactive([]);
+const isLoading = ref(false);
 const processFileInput = (files) => {
   if (!files.length) { return; }
 
   const formData = new FormData();
   formData.append("file", files[0]);
  
+  isLoading.value = true;
   useFetch('/api/processFile', {
     method: 'PUT',
     body: formData,
@@ -59,6 +67,9 @@ const processFileInput = (files) => {
       materialList,
       listImage
     }));
+  })
+  .finally(() => {
+    isLoading.value = false;
   });
 };
 
@@ -85,6 +96,34 @@ onMounted(() => {
   align-items: center;
   width: 100%;
   gap: 10px 0px;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  background-image: url('../style/minecraft-background.jpg');
+  background-size: 100px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #4ad35c;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .mine-item-container {

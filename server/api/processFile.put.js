@@ -152,24 +152,26 @@ export default defineEventHandler(async (event) => {
         return await getMcAssetsTexture(itemPath);
     }
 
-    const texturesPath = path.join(process.cwd(), '/./public/mc_textures');
-    let availableTextures;
-    try {
-        const files = await fs.promises.readdir(texturesPath);
-        availableTextures = files.filter(file => path.extname(file).toLowerCase() === '.webp');
-        console.log(availableTextures);
 
-        availableTextures.forEach(async (textureFileName) =>  {
-            const filePath = path.join(texturesPath, textureFileName);
-            const dataFile = await fs.promises.readFile(filePath);
-            let texture = dataFile.toString('base64');
+    // Для загрузки БД
+    // const texturesPath = path.join(process.cwd(), '/./public/mc_textures');
+    // let availableTextures;
+    // try {
+    //     const files = await fs.promises.readdir(texturesPath);
+    //     availableTextures = files.filter(file => path.extname(file).toLowerCase() === '.webp');
+    //     console.log(availableTextures);
 
-            setNewTextureInDatabase(texture, textureFileName.replaceAll('.webp', ''));
-        });
-    } catch (error) {
-        console.error('Error reading mc_textures directory:', error);
-        availableTextures = [];
-    }
+    //     availableTextures.forEach(async (textureFileName) =>  {
+    //         const filePath = path.join(texturesPath, textureFileName);
+    //         const dataFile = await fs.promises.readFile(filePath);
+    //         let texture = dataFile.toString('base64');
+
+    //         setNewTextureInDatabase(texture, textureFileName.replaceAll('.webp', ''));
+    //     });
+    // } catch (error) {
+    //     console.error('Error reading mc_textures directory:', error);
+    //     availableTextures = [];
+    // }
 
     const result = [];
     for (let name in materialList) {
@@ -194,10 +196,6 @@ export default defineEventHandler(async (event) => {
             const dataFile = await fs.promises.readFile(filePath);
             // return dataFile.toString('base64');
             texture = dataFile.toString('base64');
-
-            // setNewTextureInDatabase(texture, shortName);
-
-            // console.log("Converted texture: ", texture)
         } catch (error) {
             // console.log(error);
             texture = mcAssets.textureContent[shortName]?.texture && mcAssets.textureContent[shortName]?.texture.replace(/^data:image\/png;base64,/, '');
