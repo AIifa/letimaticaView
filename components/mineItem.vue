@@ -66,7 +66,7 @@ const inputNumber = () => {
   emits('changeCounter', Number(current.value));
 };
 
-const checkboxValue = ref(false);
+const checkboxValue = ref(props.counter?.current === props.counter.total);
 const changeCheckbox = () => {
   current.value = checkboxValue.value ? props.counter.total : 0;
 

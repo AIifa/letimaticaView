@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-const prosp = defineProps({
+const props = defineProps({
   list: {
     type: Array,
     default: () => [],
@@ -13,10 +13,10 @@ const prosp = defineProps({
 });
 
 const sumListCurrent = computed(() => {
-  return prosp.list.reduce((acc, item) => acc + item.current, 0);
+  return props.list.reduce((acc, item) => acc + item.current, 0);
 });
 const sumListTotal = computed(() => {
-  return prosp.list.reduce((acc, item) => acc + item.total, 0);
+  return props.list.reduce((acc, item) => acc + item.total, 0);
 });
 </script>
 

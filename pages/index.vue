@@ -63,10 +63,10 @@ const processFileInput = (files) => {
 
     localStorage.setItem('litematicData', JSON.stringify({
       'schematicName': schematicName.value,
-      'arrayCount': arrayCount.value,
       materialList,
       listImage
     }));
+    localStorage.setItem('arrayCount', JSON.stringify(arrayCount.value));
   })
   .finally(() => {
     isLoading.value = false;
@@ -75,16 +75,20 @@ const processFileInput = (files) => {
 
 const setNewCounter = (v, i) => {
   arrayCount.value[i].current = v;
+  localStorage.setItem('arrayCount', JSON.stringify(arrayCount.value));
 };
 
 onMounted(() => {
   const litematicData = JSON.parse(localStorage.getItem('litematicData'));
-  console.log(litematicData)
   if (litematicData) {
     schematicName.value = litematicData.schematicName;
     materialList = litematicData.materialList;
-    arrayCount.value = litematicData.arrayCount;
     listImage = litematicData.listImage;
+  }
+
+  const arrayCountStorage = JSON.parse(localStorage.getItem('arrayCount'));
+  if (arrayCountStorage) {
+    arrayCount.value = arrayCountStorage;
   }
 });
 </script>
@@ -131,7 +135,7 @@ onMounted(() => {
   flex-wrap: wrap;
   justify-content: space-evenly;
   align-items: center;
-  height: 73vh;
+  max-height: 73vh;
   margin: 0px 10px;
   overflow-y: auto;
 }
