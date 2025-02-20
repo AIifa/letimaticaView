@@ -100,7 +100,7 @@ export default defineEventHandler(async (event) => {
         if (blocksUsingDifferentTexture.includes(name)) {
             texture = await getDifTextureFileForBlock(name);
         }
-        if (texture == null) { texture = await getMcAssetsTexture('misc/unknown_pack'); }
+        if (!texture) { texture = await getMcAssetsTexture('misc/unknown_pack'); }
 
         let newItem = {
             amount: materialList[name],
