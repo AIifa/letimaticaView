@@ -91,14 +91,14 @@ export default defineEventHandler(async (event) => {
 
         if (!texture) {
             texture = mcAssets.textureContent[name]?.texture && mcAssets.textureContent[name]?.texture.replace(/^data:image\/png;base64,/, '');
-        }
-        // У некоторых блоков путь к нужной текстуре отличается от просто названия блока;
-        // или текстуры блока хуже подходят для представления блока, чем текстура предмета
-        if (blocksUsingItemImage.includes(name)) { 
-            texture = await getItemFileForBlock(name);
-        }
-        if (blocksUsingDifferentTexture.includes(name)) {
-            texture = await getDifTextureFileForBlock(name);
+            // У некоторых блоков путь к нужной текстуре отличается от просто названия блока;
+            // или текстуры блока хуже подходят для представления блока, чем текстура предмета
+            if (blocksUsingItemImage.includes(name)) { 
+                texture = await getItemFileForBlock(name);
+            }
+            if (blocksUsingDifferentTexture.includes(name)) {
+                texture = await getDifTextureFileForBlock(name);
+            }
         }
         if (!texture) { texture = await getMcAssetsTexture('misc/unknown_pack'); }
 
