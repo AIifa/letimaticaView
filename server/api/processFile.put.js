@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 
 import ImageCollection from '../models/imageCollection.js';
 
-import loadingNewImageInDatabase from '../utils/loadingNewImageInDatabase.js';
+// import { loadingNewImageInDatabase } from '../utils/loadingNewImageInDatabase.js';
 import parseLitematicaFile from '../utils/parseLitematicaFile.js';
 
 import { createRequire } from 'node:module';
@@ -74,7 +74,6 @@ export default defineEventHandler(async (event) => {
 
     const result = [];
     for (let name in materialList) {
-        let texture = '';
         // Пробуем найти текстуру среди вручную загруженных текстур
         // Там есть следующие текстуры:
         // Кровати, Ступени, Полублоки, Таблички (в т.ч.подвесные), Заборы+Ограды, Нажимные плиты, Калитки, Кнопки
@@ -86,17 +85,15 @@ export default defineEventHandler(async (event) => {
         // prismarine, magma_block, sea lantern
         // cartography table, мб еще какие-то блоки работ
         
-        try {
-            const filePath = path.join(process.cwd(), '/./public/mc_textures', name.replace("waxed_", "") + '.webp');
-            const dataFile = await fs.promises.readFile(filePath);
-            // return dataFile.toString('base64');
-            texture = dataFile.toString('base64');
-        } catch (error) {
-            // console.log(error);
+        const shortName = name.replaceAll('_', ' ');
+        const image = await ImageCollection.findOne({ name: shortName });
+        let texture = image?.texture;
+
+        if (!texture) {
             texture = mcAssets.textureContent[name]?.texture && mcAssets.textureContent[name]?.texture.replace(/^data:image\/png;base64,/, '');
         }
-        
-        // У некоторых блоков путь к нужной текстуре отличается от просто названия блока; или текстуры блока хуже подходят для представления блока, чем текстура предмета
+        // У некоторых блоков путь к нужной текстуре отличается от просто названия блока;
+        // или текстуры блока хуже подходят для представления блока, чем текстура предмета
         if (blocksUsingItemImage.includes(name)) { 
             texture = await getItemFileForBlock(name);
         }
@@ -106,9 +103,9 @@ export default defineEventHandler(async (event) => {
         if (texture == null) { texture = await getMcAssetsTexture('misc/unknown_pack'); }
 
         let newItem = {
-            name: name.replaceAll('_', ' '),
             amount: materialList[name],
-            texture
+            texture,
+            name,
         };
         result.push(newItem);
     }

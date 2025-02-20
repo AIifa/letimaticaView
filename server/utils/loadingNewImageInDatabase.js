@@ -1,4 +1,4 @@
-export const loadingNewImageInDatabase = async () => {
+const loadingNewImageInDatabase = async () => {
     const texturesPath = path.join(process.cwd(), '/./public/mc_textures');
     let availableTextures;
     try {
@@ -19,7 +19,7 @@ export const loadingNewImageInDatabase = async () => {
     }
 };
 
-export const setNewTextureInDatabase = async (texture, shortName) => {
+const setNewTextureInDatabase = async (texture, shortName) => {
     let newTexture = {
         name: shortName.replaceAll('_', ' '),
         texture
@@ -35,3 +35,5 @@ export const setNewTextureInDatabase = async (texture, shortName) => {
         console.log(`Texture is already in the database`)
     }
 };
+
+export { loadingNewImageInDatabase, setNewTextureInDatabase }
