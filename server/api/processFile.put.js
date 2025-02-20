@@ -104,8 +104,8 @@ export default defineEventHandler(async (event) => {
 
         let newItem = {
             amount: materialList[name],
+            name: shortName,
             texture,
-            name,
         };
         result.push(newItem);
     }
