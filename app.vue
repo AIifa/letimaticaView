@@ -9,7 +9,7 @@
 
 <style>
 .background {
-  background-image: url('./style/minecraft-background.jpg');
+  background-image: url('./assets/minecraft-background.jpg');
   background-size: cover;
   height: 100vh;
   width: 100vw;
