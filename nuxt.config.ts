@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   ssr: false,
   app: {
     baseURL: '/letimaticaView/', // Убедитесь, что это соответствует вашей конфигурации
-    buildAssetsDir: '/_nuxt/' // Это значение по умолчанию, но убедитесь, что оно установлено
+    // buildAssetsDir: '/_nuxt/' // Это значение по умолчанию, но убедитесь, что оно установлено
   },
   nitro: {
     esbuild: {
