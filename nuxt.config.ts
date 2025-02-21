@@ -16,6 +16,9 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
+    public: {
+      apiBase: 'https://26.194.150.188:3000'
+    },
     MONGODB_URL: process.env.MONGODB_URL,
   }
 })
